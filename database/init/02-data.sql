@@ -97,3 +97,11 @@ INSERT INTO clubes_estudiantes (id_club, id_estudiante, actividad, cargo) VALUES
 (15, 25, 'activo', 'presidente'),
 (15, 27, 'vetado', 'miembro'),
 (15, 29, 'activo', 'miembro');
+
+
+--Se crean hasta acá, para tener la seguridad que no habrá errores por intentar llamar campos vacíos
+CREATE VIEW tabla_general AS 
+SELECT e.carnet, e.nombre as estudiante, e.carrera, e.correo, c.nombre as club, ce.actividad, ce.cargo 
+FROM clubes_estudiantes ce
+JOIN estudiantes e ON ce.id_estudiante = e.carnet
+JOIN clubes c ON ce.id_club = c.id;
