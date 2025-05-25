@@ -2,7 +2,8 @@ import './table.css'
 
 export const Table = ({
   columnas,
-  datos
+  datos,
+  onEditar
 }) => {
   return (
     <div className='divT'> 
@@ -24,7 +25,7 @@ export const Table = ({
                 {columnas.map((col) => (
                   <td key={col.key}>
                     {col.key === 'acciones' ? (
-                      <button onClick={() => console.log('Editar', item)}>
+                      <button className = 'buttonEditar'onClick={() => onEditar(item.carnet)}>
                         Editar
                       </button>
                     ) : (

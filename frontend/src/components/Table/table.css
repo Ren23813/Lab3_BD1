@@ -27,3 +27,27 @@ h3 {
     margin: 10px;
     width: 95%;
 }
+
+.buttonEditar {
+  width: 70px;
+  height: 35px;
+  margin: 2px;
+  border: 0;
+  border-radius: 10px;
+  
+  font-size: 14px;
+  background-color: #d2c8db;
+  color: #463d53;
+  cursor: pointer;
+}
+
+.buttonEditar:hover {
+  background-color: #ddd3e6;
+  transform: scale(1.09); /* agranda un poco */
+}
+
+.buttonEditar:active {
+ box-shadow: inset 0 2px 4px rgba(201, 156, 216, 0.5);
+  background-color: #d7c4e9; 
+  transform: scale(0.98);  
+}

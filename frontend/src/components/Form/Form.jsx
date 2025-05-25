@@ -1,6 +1,6 @@
 import { CheckBox } from "../CheckBoxs/CheckBox";
 import { Input } from "../Inputs/Input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import './form.css';
 import { Button } from "../Buttons/Button";
 
@@ -22,7 +22,41 @@ const clubesIniciales = [
   { id: 15, nombre: "Boxeo" },
 ];
 
-export const Form = () => {
+export const Form = ({ datosIniciales = null }) => {
+
+    useEffect(() => {
+    if (datosIniciales) {
+        console.log("datosIniciales:", datosIniciales);
+
+      // Rellenar nombre, carrera, correo desde el primer registro
+      setFormData({
+        nombre: datosIniciales[0].estudiante || "",
+        carrera: datosIniciales[0].carrera || "",
+        correo: datosIniciales[0].correo || "",
+      });
+
+      // Rellenar los clubes
+      const clubsActualizados = clubesIniciales.map(club => {
+        const encontrado = datosIniciales.find((d) => {
+        const nombreNormalizado = d.club.replace(/^Club de\s+/i, "").trim().toLowerCase();
+        return nombreNormalizado === club.nombre.toLowerCase();
+      });
+        if (encontrado) {
+          return {
+            ...club,
+            activo: true,
+            seleccion1: encontrado.actividad,
+            seleccion2: encontrado.cargo,
+          };
+        }
+        return { ...club, activo: false, seleccion1: '', seleccion2: '' };
+      });
+
+      setClubs(clubsActualizados);
+    }
+  }, [datosIniciales]);
+
+
   const [formData, setFormData] = useState({
     nombre: "",
     carrera: "",
@@ -30,6 +64,7 @@ export const Form = () => {
   });
 
   const [error, setError] = useState("");
+  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
 
   const [clubs, setClubs] = useState(
     clubesIniciales.map((club) => ({
@@ -103,7 +138,8 @@ export const Form = () => {
   })
   .then((data) => {
     console.log("Estudiante creado exitosamente:", data);
-    // Aquí podrías limpiar el formulario si quieres
+    setMostrarConfirmacion(true);
+    
   })
   .catch((error) => {
     console.error("Error en la petición:", error);
@@ -112,7 +148,19 @@ export const Form = () => {
 
 };
 
+  
+
+
   return (
+    <>
+    {mostrarConfirmacion && (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <p className="pPop">¡Estudiante creado exitosamente! </p>
+          <button onClick={() => window.location.reload()}>Aceptar</button>
+        </div>
+      </div>
+      )}
     <div className="formStyle">
       <h3>Datos del Estudiante</h3>
       <Input title="Nombre:" name="nombre" value={formData.nombre} onChange={handleInputChange} />
@@ -135,5 +183,6 @@ export const Form = () => {
 
       <Button text="Crear Estudiante" onClick={handleSubmit} />
     </div>
+    </>
   );
 };

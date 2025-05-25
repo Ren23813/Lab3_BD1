@@ -9,6 +9,8 @@ import { Table } from './components/Table/Table';
 
 function App() {
   const [estudiantes, setEstudiantes] = useState([]);
+  const [estudianteEditando, setEstudianteEditando] = useState(null);
+
 
   const [seccion, setSeccion] = useState('datos')
   const columnas = [
@@ -30,11 +32,18 @@ function App() {
           <Table 
           datos={estudiantes}
           columnas={columnas}
+          onEditar={(carnet) => {
+            const registrosEstudiante = estudiantes.filter(est => est.carnet === carnet);
+            setEstudianteEditando(registrosEstudiante);
+            setSeccion('editar');}}
           />
         )
 
       case 'nuevo':
-        return (<Form></Form>)
+        return (<Form datosIniciales={null}></Form>)
+
+      case 'editar':
+        return (<Form datosIniciales={estudianteEditando}></Form>)
     }
   }
 
