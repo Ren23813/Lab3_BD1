@@ -40,10 +40,10 @@ function App() {
         )
 
       case 'nuevo':
-        return (<Form datosIniciales={null}></Form>)
+        return (<Form datosIniciales={null} estudiantes={estudiantes}></Form>)
 
       case 'editar':
-        return (<Form datosIniciales={estudianteEditando}></Form>)
+        return (<Form datosIniciales={estudianteEditando} estudiantes={estudiantes}></Form>)
     }
   }
 
@@ -58,16 +58,12 @@ useEffect(() => {
 
   return (
   
-     <div>
+    <div>
       <Header text = 'Estudiantes y clubs' onSelect = {setSeccion}/>
       <div className='centrar'>{mostrarSeccion()}
 
       </div>
-
-      
-      
-    
-      </div>
+    </div>
 
       
   )

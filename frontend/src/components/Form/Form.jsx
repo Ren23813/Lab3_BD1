@@ -22,7 +22,7 @@ const clubesIniciales = [
   { id: 15, nombre: "Boxeo" },
 ];
 
-export const Form = ({ datosIniciales = null }) => {
+export const Form = ({ datosIniciales = null, estudiantes = null}) => {
 
     useEffect(() => {
     if (datosIniciales) {
@@ -81,6 +81,25 @@ export const Form = ({ datosIniciales = null }) => {
     }))
   );
 
+  const validarClubesSeleccionados = () => {
+    const alMenosUnClub = clubs.some(club => club.activo);
+    if (!alMenosUnClub) {
+      setError("Debe seleccionar al menos un club.");
+      return false;
+    }
+    return true;
+  };
+
+  const correoYaExiste = (correo) => {
+  
+    const correoActual = datosIniciales ? datosIniciales[0].correo : null;
+
+    return estudiantes.some(est => 
+      est.correo === correo && correo !== correoActual
+    );
+  };
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -127,6 +146,15 @@ export const Form = ({ datosIniciales = null }) => {
       setError("Todos los campos son obligatorios para actualizar.");
       return;
     }
+    if (!validarClubesSeleccionados()) {
+      return;
+    }
+    if (correoYaExiste(correo)) {
+      setError("El correo ya está registrado.");
+      return;
+    }
+
+
 
     const clubesSeleccionados = [];
     const actividadesSeleccionadas = [];
@@ -184,6 +212,17 @@ export const Form = ({ datosIniciales = null }) => {
       setError("El correo no tiene un formato válido.");
       return;
     }
+
+    if (!validarClubesSeleccionados()) {
+      return;
+    }
+
+    if (correoYaExiste(correo)) {
+      setError("El correo ya está registrado.");
+      return;
+    }
+
+
 
     setError(""); // Limpia errores anteriores
 
