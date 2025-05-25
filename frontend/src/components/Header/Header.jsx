@@ -7,7 +7,10 @@ export const Header = ({
 }) => {
     return(
         <div className='head'>
-            <h2 className='titleH'>{text}</h2>
+            <div className='divV'>
+                <h2 className='titleH'>{text}</h2>
+                <p className='nombres'>Melisa Mendizabal - Renato Rojas</p>
+            </div>
             <div className='buttonsH'> 
                 <Button 
                     text = 'Ver datos' 
