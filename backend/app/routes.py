@@ -16,6 +16,22 @@ class IngresoEstudiante(BaseModel):
     class Config:
         orm_mode = True
 
+class EstudianteExistente(BaseModel):
+    carnet:int
+    nombre:str
+    carrera:str
+    correo:str
+    clubes:list[int]
+    actividad: list[str]
+    cargo: list[str]
+    class Config:
+        orm_mode = True
+
+class CarnetEntrante(BaseModel):
+    carnet:int
+    class Config:
+        orm_mode = True
+
 def get_db():
     db = SessionLocal()
     try:
@@ -71,3 +87,68 @@ def registrar_estudiante(estudiante: IngresoEstudiante, db: Session = Depends(ge
         "estudiante": nuevo_estudiante,
         "clubes_asociados": estudiante.clubes
     }
+
+
+@router.put("/edit")
+def editar_estudiante(estudianteEntrante: EstudianteExistente, db: Session = Depends(get_db)):
+    estudiante_shouldExist = db.query(Estudiante).filter(Estudiante.carnet == estudianteEntrante.carnet).first()
+    if not estudiante_shouldExist:
+        raise HTTPException(status_code=400, detail="El estudiante a editar no existe.")
+    
+    estudiante_shouldExist.nombre = estudianteEntrante.nombre
+    estudiante_shouldExist.carrera = estudianteEntrante.carrera
+    estudiante_shouldExist.correo = estudianteEntrante.correo
+
+    db.query(Club_Estudiante).filter(
+        Club_Estudiante.id_estudiante == estudianteEntrante.carnet
+    ).delete(synchronize_session=False)
+
+    for i, club_id in enumerate(estudianteEntrante.clubes):
+        try:
+            actividad_val = estudianteEntrante.actividad[i]
+            cargo_val = estudianteEntrante.cargo[i]
+        except IndexError:
+            raise HTTPException(status_code=400, detail=f"Faltan valores de actividad o cargo para el club con ID {club_id}.")
+        
+        club = db.query(Club).get(club_id)
+        if not club:
+            raise HTTPException(status_code=400, detail=f"Club con ID {club_id} no existe.")
+        
+        club_estudiante = Club_Estudiante(
+            id_club=club_id,
+            id_estudiante=estudianteEntrante.carnet,
+            actividad=actividad_val,
+            cargo=cargo_val
+        )
+        db.add(club_estudiante)
+    
+    db.commit()  
+    db.refresh(estudiante_shouldExist)
+    return {
+        "message": "Estudiante actualizado correctamente",
+        "estudiante": {
+        "carnet":  estudiante_shouldExist.carnet,
+        "nombre":  estudiante_shouldExist.nombre,
+        "carrera": estudiante_shouldExist.carrera,
+        "correo":  estudiante_shouldExist.correo,
+        "clubes":  estudianteEntrante.clubes,
+        "actividad": estudianteEntrante.actividad,
+        "cargo": estudianteEntrante.cargo,
+        }
+    }
+
+    
+@router.delete("/delete")
+def borrar_estudiante(carnet: CarnetEntrante, db: Session = Depends(get_db)):
+    estudiante_shouldExist = db.query(Estudiante).filter(Estudiante.carnet == carnet.carnet).first()
+    if not estudiante_shouldExist:
+        raise HTTPException(status_code=400, detail="El estudiante a eliminar no existe.")
+    
+    db.query(Club_Estudiante).filter(Club_Estudiante.id_estudiante == carnet.carnet).delete()
+    db.delete(estudiante_shouldExist)
+    db.commit()
+    return {
+        "message":"estudiante eliminado",
+        "estudiante id":carnet.carnet
+    }
+    

@@ -21,7 +21,7 @@ class Estudiante(Base):
         ),
     )
    
-    clubes_estudiantes = relationship("Club_Estudiante", back_populates="estudiante")
+    clubes_estudiantes = relationship("Club_Estudiante", back_populates="estudiante",passive_deletes=True,cascade="all,delete-orphan,delete")
 
     def __repr__(self):
         return f"<Estudiante(carnet={self.carnet}, nombre={self.nombre}, carrera={self.carrera}, correo={self.correo})>"
@@ -46,7 +46,7 @@ class Club(Base):
     nombre = Column(String(100), nullable=False)
     tipo = Column(String(50), nullable=False)
     
-    clubes_estudiantes = relationship("Club_Estudiante", back_populates="club")
+    clubes_estudiantes = relationship("Club_Estudiante", back_populates="club",cascade="all,delete-orphan")
 
     def __repr__(self):
         return f"<Club(id={self.id}, nombre={self.nombre}, tipo={self.tipo})>"
@@ -61,8 +61,8 @@ class Club_Estudiante(Base):
     actividad = Column(Enum(Actividad,name='status',nativeEnum=True,create_type=False), nullable=False)
     cargo = Column(Enum(CargoClub,name='cargo_club',nativeEnum=True,create_type=False), nullable= False)
 
-    club = relationship("Club", back_populates="clubes_estudiantes")
-    estudiante = relationship("Estudiante", back_populates="clubes_estudiantes")
+    club = relationship("Club", back_populates="clubes_estudiantes",cascade="all,delete")
+    estudiante = relationship("Estudiante", back_populates="clubes_estudiantes",cascade="all,delete")
 
     def __repr__(self):
         return f"<Club_Estudiante(id={self.id}, id_club={self.id_club}, id_estudiante={self.id_estudiante}, actividad={self.actividad}, cargo={self.cargo})>"
