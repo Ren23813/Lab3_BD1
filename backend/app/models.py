@@ -80,8 +80,9 @@ class Tabla_General(Base):
             "correo ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'",
             name="correo_valido"
         ),
+        {"extend_existing": True}
     )
-    club = Column(String(100))
+    club = Column(String(100), primary_key=True)
     actividad = Column(Enum(Actividad))
     cargo = Column(Enum(CargoClub))
 
