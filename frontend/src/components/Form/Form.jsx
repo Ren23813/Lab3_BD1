@@ -30,6 +30,7 @@ export const Form = ({ datosIniciales = null }) => {
 
       // Rellenar nombre, carrera, correo desde el primer registro
       setFormData({
+        carnet: datosIniciales[0].carnet || "",
         nombre: datosIniciales[0].estudiante || "",
         carrera: datosIniciales[0].carrera || "",
         correo: datosIniciales[0].correo || "",
@@ -58,6 +59,7 @@ export const Form = ({ datosIniciales = null }) => {
 
 
   const [formData, setFormData] = useState({
+    carnet: "",
     nombre: "",
     carrera: "",
     correo: "",
@@ -65,6 +67,10 @@ export const Form = ({ datosIniciales = null }) => {
 
   const [error, setError] = useState("");
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
+  const [confirmacionDelete, setCofirmacionDelete] = useState(false);
+  const [confirmacionUpdate, setConfirmacionUpdate] = useState(false);
+  const modoEdicion = datosIniciales !== null;
+
 
   const [clubs, setClubs] = useState(
     clubesIniciales.map((club) => ({
@@ -84,69 +90,151 @@ export const Form = ({ datosIniciales = null }) => {
     return /\S+@\S+\.\S+/.test(email);
   };
 
-  const handleSubmit = () => {
-  const { nombre, carrera, correo } = formData;
+  const handleDelete = () => {
+    const { carnet } = formData;
 
-  if (!nombre || !carrera || !correo) {
-    setError("Todos los campos son obligatorios.");
-    return;
-  }
-
-  if (!validateEmail(correo)) {
-    setError("El correo no tiene un formato válido.");
-    return;
-  }
-
-  setError(""); // Limpia errores anteriores
-
-  const clubesSeleccionados = [];
-  const actividadesSeleccionadas = [];
-  const cargosSeleccionados = [];
-
-  clubs.forEach((club) => {
-    if (club.activo) {
-      clubesSeleccionados.push(club.id);
-      actividadesSeleccionadas.push(club.seleccion1);
-      cargosSeleccionados.push(club.seleccion2);
+    if (!carnet) {
+      setError("No se encontró el carnet del estudiante para eliminar.");
+      return;
     }
-  });
 
-  const estudiante = {
-    nombre,
-    carrera,
-    correo,
-    clubes: clubesSeleccionados,
-    actividad: actividadesSeleccionadas,
-    cargo: cargosSeleccionados,
+    fetch(`http://localhost:8000/delete`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ carnet }),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Error al eliminar");
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Estudiante eliminado:", data);
+        setCofirmacionDelete(true);
+      })
+      .catch((error) => {
+        console.error("Error al eliminar:", error);
+        setError("Ocurrió un error al eliminar el estudiante.");
+      });
   };
 
-  console.log("Datos a enviar:", estudiante);
-  //  enviar `estudiante` al backend
 
-  fetch("http://localhost:8000/register", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(estudiante),
-})
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error("Error al enviar los datos");
+  const handleUpdate = () => {
+    const { carnet, nombre, carrera, correo } = formData;
+
+    if (!carnet || !nombre || !carrera || !correo) {
+      setError("Todos los campos son obligatorios para actualizar.");
+      return;
     }
-    return response.json(); // si el backend responde con JSON
-  })
-  .then((data) => {
-    console.log("Estudiante creado exitosamente:", data);
-    setMostrarConfirmacion(true);
-    
-  })
-  .catch((error) => {
-    console.error("Error en la petición:", error);
-    setError("Ocurrió un error al enviar los datos.");
-  });
 
-};
+    const clubesSeleccionados = [];
+    const actividadesSeleccionadas = [];
+    const cargosSeleccionados = [];
+
+    clubs.forEach((club) => {
+      if (club.activo) {
+        clubesSeleccionados.push(club.id);
+        actividadesSeleccionadas.push(club.seleccion1);
+        cargosSeleccionados.push(club.seleccion2);
+      }
+    });
+
+    const estudiante = {
+      carnet,
+      nombre,
+      carrera,
+      correo,
+      clubes: clubesSeleccionados,
+      actividad: actividadesSeleccionadas,
+      cargo: cargosSeleccionados,
+    };
+
+    fetch(`http://localhost:8000/edit`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(estudiante),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Error al actualizar");
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Estudiante actualizado:", data);
+        setConfirmacionUpdate(true);
+      })
+      .catch((error) => {
+        console.error("Error al actualizar:", error);
+        setError("Ocurrió un error al actualizar el estudiante.");
+      });
+  };
+
+
+  const handleSubmit = () => {
+    const { nombre, carrera, correo } = formData;
+
+    if (!nombre || !carrera || !correo) {
+      setError("Todos los campos son obligatorios.");
+      return;
+    }
+
+    if (!validateEmail(correo)) {
+      setError("El correo no tiene un formato válido.");
+      return;
+    }
+
+    setError(""); // Limpia errores anteriores
+
+    const clubesSeleccionados = [];
+    const actividadesSeleccionadas = [];
+    const cargosSeleccionados = [];
+
+    clubs.forEach((club) => {
+      if (club.activo) {
+        clubesSeleccionados.push(club.id);
+        actividadesSeleccionadas.push(club.seleccion1);
+        cargosSeleccionados.push(club.seleccion2);
+      }
+    });
+
+    const estudiante = {
+      nombre,
+      carrera,
+      correo,
+      clubes: clubesSeleccionados,
+      actividad: actividadesSeleccionadas,
+      cargo: cargosSeleccionados,
+    };
+
+    console.log("Datos a enviar:", estudiante);
+    //  enviar `estudiante` al backend
+
+    fetch("http://localhost:8000/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(estudiante),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Error al enviar los datos");
+      }
+      return response.json(); // si el backend responde con JSON
+    })
+    .then((data) => {
+      console.log("Estudiante creado exitosamente:", data);
+      setMostrarConfirmacion(true);
+      
+    })
+    .catch((error) => {
+      console.error("Error en la petición:", error);
+      setError("Ocurrió un error al enviar los datos.");
+    });
+
+  };
 
   
 
@@ -160,7 +248,28 @@ export const Form = ({ datosIniciales = null }) => {
           <button onClick={() => window.location.reload()}>Aceptar</button>
         </div>
       </div>
-      )}
+    )}
+
+    {confirmacionUpdate && (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <p className="pPop">¡El estudiante se ha actualizado correctamente! </p>
+          <button onClick={() => window.location.reload()}>Aceptar</button>
+        </div>
+      </div>
+    )}
+
+    {confirmacionDelete && (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <p className="pPop">¡Se ha eliminado al estudiante correctamente! </p>
+          <button onClick={() => window.location.reload()}>Aceptar</button>
+        </div>
+      </div>
+    )}
+
+
+    
     <div className="formStyle">
       <h3>Datos del Estudiante</h3>
       <Input title="Nombre:" name="nombre" value={formData.nombre} onChange={handleInputChange} />
@@ -179,9 +288,22 @@ export const Form = ({ datosIniciales = null }) => {
           }
         />
       ))}
+
       {error && <p style={{ color: "Purple" }}>{error}</p>}
 
-      <Button text="Crear Estudiante" onClick={handleSubmit} />
+      {!modoEdicion ? (
+        <div className = 'divB'>
+        <Button text="Cancelar" onClick={() => window.location.reload()} />
+        <Button text="Crear Estudiante" onClick={handleSubmit} />
+        </div>
+        ) : (
+        <div className = 'divB'>
+          <Button text="Cancelar" onClick={() => window.location.reload()} />
+          <Button text="Actualizar Estudiante" onClick={handleUpdate} />
+          <Button text="Eliminar Estudiante" onClick={handleDelete} />
+        </div>
+      )}
+
     </div>
     </>
   );
