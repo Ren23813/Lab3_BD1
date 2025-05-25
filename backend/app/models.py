@@ -58,8 +58,8 @@ class Club_Estudiante(Base):
     id = Column(Integer, primary_key = True, autoincrement=True)
     id_club = Column(Integer, ForeignKey('clubes.id', ondelete="CASCADE"), nullable=False)
     id_estudiante = Column(Integer, ForeignKey('estudiantes.carnet', ondelete="CASCADE"), nullable=False)
-    actividad = Column(Enum(Actividad), nullable=False)
-    cargo = Column(Enum(CargoClub), nullable= False)
+    actividad = Column(Enum(Actividad,name='status',nativeEnum=True,create_type=False), nullable=False)
+    cargo = Column(Enum(CargoClub,name='cargo_club',nativeEnum=True,create_type=False), nullable= False)
 
     club = relationship("Club", back_populates="clubes_estudiantes")
     estudiante = relationship("Estudiante", back_populates="clubes_estudiantes")
@@ -83,8 +83,8 @@ class Tabla_General(Base):
         {"extend_existing": True}
     )
     club = Column(String(100), primary_key=True)
-    actividad = Column(Enum(Actividad))
-    cargo = Column(Enum(CargoClub))
+    actividad = Column(Enum(Actividad, name="status", native_enum=True, create_type=False))
+    cargo = Column(Enum(CargoClub,name="cargo_club", native_enum=True, create_type=False))
 
     def __repr__(self):
         return f"<TablaGeneral(carnet={self.carnet}, estudiante={self.estudiante}, carrera={self.carrera}, correo={self.correo}, club={self.club}, actividad={self.actividad}, cargo={self.cargo})>"
