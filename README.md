@@ -57,7 +57,7 @@ git clone https://github.com/Ren23813/Lab3_BD1
 cd Lab3_BD1
 ```
 
-###2. Levantar todo con Docker
+### 2. Levantar todo con Docker
 Asegúrate de tener Docker y Docker Compose instalados y funcionando.
 Desde la carpeta raíz (que contiene frontend/, backend/ y database/), ejecuta:
 
