@@ -19,6 +19,7 @@ function App() {
     { key: 'cargo', titulo: 'Puesto Club' },
     { key: 'actividad', titulo: 'Estado en el club' },
     { key: 'correo', titulo: 'Correo' },
+    { key: 'acciones', titulo: 'Acciones' }
     
   ]
 

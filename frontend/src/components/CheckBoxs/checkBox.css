@@ -1,0 +1,48 @@
+.divC {
+    display: flex;
+    width: 570px;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.divTitle {
+    width: 40%;
+    display: flex;
+    align-items: center;
+}
+
+.divSelect {
+    display: flex;
+    width: 490px;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.title {
+    color: #463d53;
+    margin: 0 0 0 5px;
+    font-size: 17px;
+}
+
+
+input[type="checkbox"] {
+    width: 25px;
+    height: 25px;
+    appearance: none;
+    background-color: #d2c8db; /* color cuando está desmarcado */
+    border: 2px solid #cbbada;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+   
+    background-color: #9186ae;
+    border: 2px solid #766c92;
+}
+
+input[type="checkbox"]:checked::after {
+    display: flex;
+    margin: 1px 5px;
+    content: "✖"; /* o "X" si prefieres */
+}

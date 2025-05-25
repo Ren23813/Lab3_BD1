@@ -9,6 +9,7 @@ export const Button = ({
             <button className='buttonStyle' onClick={onClick}> 
                 {text}
             </button>
+            
         
     )
 }
