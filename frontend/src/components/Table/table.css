@@ -1,0 +1,25 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+th, td {
+  border: 1px solid #4b4159;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+th {
+  background-color: #9186ae;
+}
+
+td {
+    color: #463d53;
+}
+
+.divT{
+    margin: 10px;
+    width: 95%;
+}

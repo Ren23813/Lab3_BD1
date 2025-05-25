@@ -1,0 +1,31 @@
+.contenedor {
+    display: flex;
+    width: 550px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.labelI{
+    text-align: left;
+    width: 500px;
+    color: #463d53;
+    font-size: 14px;
+}
+
+.inputStyle {
+    background-color: #d2c8db;
+    color: #463d53;
+    width: 490px;
+    height: 30px;
+    font-size: 16px;
+    border-radius: 10px;
+    padding: 0 10px;
+    border: 0;
+}
+
+.inputStyle:focus {
+    border: 2px solid #c3b4d0; 
+    outline: none;
+    
+}
